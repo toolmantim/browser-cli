@@ -54,6 +54,12 @@ if [ "$os" = "windows" ]; then
 else
   curl -fsSL "$url" -o "$INSTALL_DIR/browser" || error "Failed to download binary"
   chmod +x "$INSTALL_DIR/browser"
+  if [ "$os" = "darwin" ]; then
+    # Ad-hoc sign to prevent macOS Gatekeeper from killing the binary later
+    if ! codesign --force --sign - "$INSTALL_DIR/browser" >/dev/null; then
+      echo -e "${RED}Warning: signing failed. It's recommended to install Xcode CLI tools (xcode-select --install) and reinstall.${NC}"
+    fi
+  fi
 fi
 
 echo -e "${GREEN}Installed browser v$version${NC} to $INSTALL_DIR"
